@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+/*
+ * Stage 0 keeps only the dark palette from the design system so the spike
+ * pages are readable. Stage 1 replaces this with the full token set, the
+ * light theme and the component library.
+ */
+:root {
+  color-scheme: dark;
+  --bg: #09090d;
+  --bg-2: #111116;
+  --card: #19191f;
+  --card-elevated: #222229;
+  --accent: #ffd43b;
+  --accent-2: #f5b82e;
+  --text: #f5f5f5;
+  --text-2: #92929d;
+  --success: #a8d96c;
+  --error: #ff6262;
+  --border: rgb(255 255 255 / 0.08);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-2: var(--bg-2);
+  --color-card: var(--card);
+  --color-card-elevated: var(--card-elevated);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-text: var(--text);
+  --color-text-2: var(--text-2);
+  --color-success: var(--success);
+  --color-error: var(--error);
+  --color-border: var(--border);
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

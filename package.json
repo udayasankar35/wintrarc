@@ -1,0 +1,46 @@
+{
+  "name": "wintrarc",
+  "version": "0.1.0",
+  "private": true,
+  "description": "WINTRARC: an AI-assisted habit, task, goal and focus tracker built around time-boxed Arcs.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "e2e": "playwright test",
+    "check-env": "node scripts/check-env.mjs",
+    "vapid": "node scripts/generate-vapid.mjs",
+    "verify": "npm run typecheck && npm run lint && npm run format:check && npm run test"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.119.0",
+    "next": "16.4.5",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "web-push": "^3.6.7",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "@tailwindcss/turbopack": "^4",
+    "@types/node": "^22.20.5",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/web-push": "^3.6.4",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.5",
+    "prettier": "^3.9.10",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "^5.1.0"
+  }
+}
