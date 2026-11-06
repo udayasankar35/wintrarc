@@ -1,8 +1,8 @@
 # Progress
 
-Last updated: 2026-11-07. **Current stage: 0, foundations.** The code is complete
-and verified where this environment allows. Items that need the owner, a real
-device or GitHub's own runners are listed under "Not yet verified".
+Last updated: 2026-11-07. **Current stage: 0, foundations.** The code is complete,
+verified here and green on GitHub's runners. Items that need the owner or a real
+device are listed under "Not yet verified".
 
 ## Stages
 
@@ -82,14 +82,15 @@ All commands were run on the final code on 2026-11-07.
       `.env*` is git-ignored except `.env.example`.
 - [x] **Documents:** `README.md`, `ARCHITECTURE.md`, `docs/RUNBOOK.md`,
       `docs/PUSH-SPIKE.md`.
+- [x] **CI green on GitHub.** Run 42312974687 on commit `683881c` (branch
+      `stage-0-foundations`) passed both jobs. `verify`: install, typecheck, lint,
+      formatting, unit tests, build, production audit, end-to-end tests. `database`:
+      local Supabase started, migrations applied, `supabase test db` passed. The
+      pgTAP tests (`health_ping` and the `rls_enabled` guard) therefore ran on a real
+      Supabase stack, which this environment could not do itself.
 
 ## Not yet verified
 
-- [ ] **CI green on GitHub.** The workflows are committed but have not run yet.
-- [ ] **pgTAP database tests.** `supabase/tests/database/*.test.sql` run in the CI
-      `database` job. They could not run here: pgTAP is not installed and Docker
-      cannot pull the Supabase images from this environment. The same properties
-      were checked in plain SQL above.
 - [ ] **Vercel deployment loads over HTTPS.** Owner step.
 - [ ] **Supabase project connected.** After `db push`, `/api/health` should show
       `"database": "ok"`. Owner step.
