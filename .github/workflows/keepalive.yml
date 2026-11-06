@@ -1,0 +1,37 @@
+name: Keep alive
+
+# Calls /api/health once a day. The route queries the database, so a free
+# Supabase project keeps seeing activity and is not paused for inactivity.
+# A Vercel cron (see vercel.json) makes the same call as a second safety net.
+#
+# Set the repository variable APP_URL (Settings, Secrets and variables,
+# Actions, Variables) to your deployment URL, for example
+# https://wintrarc.vercel.app
+#
+# GitHub disables scheduled workflows in a public repository after 60 days
+# without repository activity. See docs/RUNBOOK.md.
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping the health route
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+        run: |
+          if [ -z "$APP_URL" ]; then
+            echo "::warning::Repository variable APP_URL is not set. Skipping the keep-alive ping."
+            exit 0
+          fi
+          curl --fail --silent --show-error \
+            --retry 3 --retry-delay 10 --max-time 30 \
+            "${APP_URL%/}/api/health"
+          echo
