@@ -21,7 +21,11 @@ async function SpikeGate() {
 
 export default function PushSpikePage() {
   return (
-    <main className="mx-auto max-w-xl px-6 py-12">
+    <main
+      id="main"
+      tabIndex={-1}
+      className="mx-auto max-w-xl px-6 py-12 outline-none"
+    >
       <Suspense fallback={<p className="text-text-2">Loading…</p>}>
         <SpikeGate />
       </Suspense>

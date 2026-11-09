@@ -7,9 +7,11 @@ time-boxed 30, 60 or 90-day seasons with a theme, linked goals and a
 retrospective. One account, the same state on every device, as an installable
 web app with real push notifications.
 
-**Status: Stage 0 of 12, foundations.** The app shell, sign-in and the Today
-screen arrive in the next stages. See [PROGRESS.md](PROGRESS.md) for exactly what
-works today and what is still to come.
+**Status: Stage 1 of 12, design system and installable app shell.** The
+interface, themes, navigation, keyboard shortcuts and install experience work.
+Sign-in and real data arrive in the next stages, so every page shows an empty
+state for now. See [PROGRESS.md](PROGRESS.md) for exactly what works today and
+what is still to come.
 
 It is a portfolio project, run on free plans (Next.js on Vercel, Supabase), and
 shared with a few invited friends.
@@ -35,12 +37,36 @@ The app starts without Supabase values. `/api/health` then reports
 | `npm run dev`       | Start the development server                          |
 | `npm run build`     | Production build                                      |
 | `npm run verify`    | Typecheck, lint, formatting check and unit tests      |
+| `npm run icons`     | Regenerate the app icons (see below)                  |
 | `npm test`          | Unit tests (Vitest)                                   |
 | `npm run e2e`       | Browser tests (Playwright). Run `npm run build` first |
 | `npm run check-env` | Report missing environment variables (`-- --stage N`) |
 | `npm run vapid`     | Generate a VAPID key pair for push notifications      |
 
 Browser tests need Playwright's Chromium: `npx playwright install chromium`.
+
+## Design gallery and screenshots
+
+`/dev/design` shows every component in every state. It is off by default.
+Start the server with `ENABLE_DESIGN_GALLERY=true` to see it.
+
+`npm run e2e` opens every page at phone (375px), tablet (768px) and desktop
+(1280px) widths in both themes, runs axe accessibility checks and keeps a
+screenshot of each in `test-results/`. CI uploads them as `e2e-screenshots`.
+
+## Install it as an app
+
+Open the deployed site and use the browser's install option (Chrome and Edge
+show an install button; on iPhone use Share, then Add to Home Screen). Settings
+has the exact steps for your browser. The app works as an installed app on
+Android, iPhone and desktop. A native Android file is an optional last stage.
+
+## App icons
+
+The icons are generated from the same ring geometry as the in-app logo:
+`npm run icons` (needs Node 22.18 or later and Playwright's Chromium; set
+`CHROMIUM_PATH` to use one that is already installed). The PNG files are
+committed, so this only runs when the design changes.
 
 ## Set up Supabase
 

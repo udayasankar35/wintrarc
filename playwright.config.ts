@@ -19,11 +19,14 @@ export default defineConfig({
   },
   projects: [
     {
+      // The full suite. Specs set their own viewports where width matters.
       name: "desktop",
       use: { ...devices["Desktop Chrome"], launchOptions },
     },
     {
+      // A real phone profile (touch, mobile user agent) for the basics.
       name: "pixel",
+      testMatch: /smoke\.spec\.ts/,
       use: { ...devices["Pixel 7"], launchOptions },
     },
   ],
@@ -33,5 +36,7 @@ export default defineConfig({
     url: "http://localhost:3000/api/health",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    // The component gallery is a development page; tests turn it on.
+    env: { ENABLE_DESIGN_GALLERY: "true" },
   },
 });

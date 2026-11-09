@@ -1,23 +1,80 @@
 @import "tailwindcss";
 
 /*
- * Stage 0 keeps only the dark palette from the design system so the spike
- * pages are readable. Stage 1 replaces this with the full token set, the
- * light theme and the component library.
+ * Design tokens. Every colour, radius, duration and type size is a CSS
+ * variable first; components read only these tokens.
+ *
+ * Dark is the default. `data-theme="light"` on <html> switches themes and is
+ * set before first paint by the inline script in src/lib/theme/script.ts.
+ * src/lib/design/contrast.test.ts parses this file and fails CI when a text or
+ * control pair drops below WCAG AA, so keep new tokens in the blocks below.
  */
 :root {
   color-scheme: dark;
+
+  /* Surfaces */
   --bg: #09090d;
   --bg-2: #111116;
   --card: #19191f;
   --card-elevated: #222229;
+
+  /* The one gold. A fill for the primary action, with --on-accent text on it. */
   --accent: #ffd43b;
   --accent-2: #f5b82e;
+  --on-accent: #09090d;
+  /* Gold used as text or an icon on a surface. */
+  --accent-text: #ffd43b;
+  /* Gold used for graphics with no text: Arc ring segments, progress fills. */
+  --accent-graphic: #ffd43b;
+
+  /* Text and status */
   --text: #f5f5f5;
   --text-2: #92929d;
   --success: #a8d96c;
   --error: #ff6262;
+
+  /* Lines. --border is a hairline for surfaces. --control is for the edge of
+     an input, checkbox or switch and must reach 3:1 on every surface. */
   --border: rgb(255 255 255 / 0.08);
+  --control: #7c7c88;
+  --ring: #f5f5f5;
+
+  /* Elevation: lighter surface and a hairline first, a soft shadow second. */
+  --edge-highlight: inset 0 1px 0 rgb(255 255 255 / 0.05);
+  --elevation-soft: 0 8px 24px rgb(0 0 0 / 0.35);
+
+  /* Motion: transform and opacity only. */
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f7f5f0;
+  --bg-2: #efece4;
+  --card: #ffffff;
+  --card-elevated: #ffffff;
+
+  --accent: #ffd43b;
+  --accent-2: #f5b82e;
+  --on-accent: #17171c;
+  --accent-text: #8a6400;
+  --accent-graphic: #b07f00;
+
+  --text: #17171c;
+  --text-2: #5c5c67;
+  --success: #2f6b0a;
+  --error: #b42323;
+
+  --border: rgb(23 23 28 / 0.1);
+  --control: #85858f;
+  --ring: #17171c;
+
+  --edge-highlight: inset 0 0 0 0 transparent;
+  --elevation-soft: 0 4px 16px rgb(23 23 28 / 0.07);
 }
 
 @theme inline {
@@ -27,25 +84,294 @@
   --color-card-elevated: var(--card-elevated);
   --color-accent: var(--accent);
   --color-accent-2: var(--accent-2);
+  --color-on-accent: var(--on-accent);
+  --color-accent-text: var(--accent-text);
+  --color-accent-graphic: var(--accent-graphic);
   --color-text: var(--text);
   --color-text-2: var(--text-2);
   --color-success: var(--success);
   --color-error: var(--error);
   --color-border: var(--border);
+  --color-control: var(--control);
+  --color-ring: var(--ring);
+
+  --shadow-soft: var(--elevation-soft);
+
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+    var(--font-text-loaded), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    var(--font-numeral-loaded), ui-monospace, SFMono-Regular, Menlo, Consolas,
+    "Liberation Mono", monospace;
 }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-sans);
+/*
+ * Type scale 12, 14, 16, 20, 28, 40 and weights 400, 500, 600 only.
+ * Line height shrinks as size grows. Anything outside this scale has no class.
+ */
+@theme {
+  --text-*: initial;
+  --text-meta: 0.75rem;
+  --text-meta--line-height: 1.4;
+  --text-secondary: 0.875rem;
+  --text-secondary--line-height: 1.5;
+  --text-body: 1rem;
+  --text-body--line-height: 1.55;
+  --text-subhead: 1.25rem;
+  --text-subhead--line-height: 1.3;
+  --text-title: 1.75rem;
+  --text-title--line-height: 1.2;
+  --text-display: 2.5rem;
+  --text-display--line-height: 1.1;
+
+  --font-weight-*: initial;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  --radius-*: initial;
+  --radius-control: 8px;
+  --radius-card: 12px;
+
+  --animate-fade-in: fade-in var(--dur-base) var(--ease) both;
+  --animate-fade-out: fade-out var(--dur-fast) var(--ease) both;
+  --animate-dialog-in: dialog-in var(--dur-base) var(--ease) both;
+  --animate-dialog-out: dialog-out var(--dur-fast) var(--ease) both;
+  --animate-pop-in: pop-in var(--dur-fast) var(--ease) both;
+  --animate-pop-out: pop-out var(--dur-fast) var(--ease) both;
+  --animate-slide-in-left: slide-in-left var(--dur-slow) var(--ease) both;
+  --animate-slide-out-left: slide-out-left var(--dur-base) var(--ease) both;
+  --animate-slide-in-right: slide-in-right var(--dur-slow) var(--ease) both;
+  --animate-slide-out-right: slide-out-right var(--dur-base) var(--ease) both;
+  --animate-slide-in-bottom: slide-in-bottom var(--dur-slow) var(--ease) both;
+  --animate-slide-out-bottom: slide-out-bottom var(--dur-base) var(--ease) both;
+  --animate-toast-in: toast-in var(--dur-slow) var(--ease) both;
+  --animate-toast-out: fade-out var(--dur-base) var(--ease) both;
+  --animate-check-pop: check-pop var(--dur-base) var(--ease) both;
+  --animate-ring-pulse: ring-pulse var(--dur-slow) var(--ease) 1 both;
+  --animate-quiet-pulse: quiet-pulse 1.6s ease-in-out infinite;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes dialog-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, calc(-50% + 8px)) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+  @keyframes dialog-out {
+    from {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translate(-50%, calc(-50% + 4px)) scale(0.98);
+    }
+  }
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  @keyframes pop-out {
+    from {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(2px) scale(0.98);
+    }
+  }
+  @keyframes slide-in-left {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes slide-out-left {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes slide-out-right {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes slide-in-bottom {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  @keyframes slide-out-bottom {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(100%);
+    }
+  }
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes check-pop {
+    0% {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes ring-pulse {
+    0% {
+      transform: scale(1);
+    }
+    45% {
+      transform: scale(1.35);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  @keyframes quiet-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
 }
 
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+@layer base {
+  html {
+    background: var(--bg);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100dvh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.55;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  /* One focus ring everywhere, visible in both themes. Never removed without
+     this replacement. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+}
+
+@layer components {
+  /* Ledger numerals: mono, tabular, so columns of figures line up. */
+  .numeral {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+    letter-spacing: -0.01em;
+  }
+
+  .skip-link {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    z-index: 100;
+    padding: 12px 16px;
+    border-radius: var(--radius-control);
+    background: var(--accent);
+    color: var(--on-accent);
+    font-weight: 500;
+    transform: translateY(-200%);
+  }
+  .skip-link:focus-visible {
+    transform: translateY(0);
+  }
+}
+
+/* Reduced motion gets an instant fallback: no movement, no looping. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

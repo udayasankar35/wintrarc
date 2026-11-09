@@ -219,4 +219,15 @@ export const ENV_SPEC = [
     secret: false,
     description: "Optional. Sentry project slug.",
   },
+
+  // Development pages
+  {
+    name: "ENABLE_DESIGN_GALLERY",
+    group: "Development",
+    stage: 1,
+    required: false,
+    secret: false,
+    description:
+      "Set to true to switch on the /dev/design component gallery. Leave unset in production.",
+  },
 ];

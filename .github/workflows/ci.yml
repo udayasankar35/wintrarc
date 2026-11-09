@@ -50,6 +50,16 @@ jobs:
       - name: End-to-end tests
         run: npm run e2e
 
+      - name: Upload screenshots
+        # Every page at phone, tablet and desktop width in both themes.
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-screenshots
+          path: test-results/**/*.png
+          retention-days: 7
+          if-no-files-found: ignore
+
       - name: Upload Playwright report
         if: failure()
         uses: actions/upload-artifact@v4
