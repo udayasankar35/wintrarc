@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["esnext", "webworker"],
+    "types": [],
+    "incremental": false,
+    "plugins": [],
+    "noEmit": true
+  },
+  "include": ["src/sw/sw.ts", "src/sw/push-logic.ts"],
+  "exclude": ["node_modules"]
+}

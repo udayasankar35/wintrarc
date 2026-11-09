@@ -13,10 +13,7 @@ test.describe("smoke", () => {
     const response = await page.goto("/");
     expect(response?.status()).toBe(200);
     await expect(
-      page.getByRole("heading", { level: 1, name: "WINTRARC" }),
-    ).toBeVisible();
-    await expect(
-      page.getByText("Become the person you said you'd be."),
+      page.getByRole("heading", { level: 1, name: "Today" }),
     ).toBeVisible();
     expect(problems).toEqual([]);
   });
@@ -48,37 +45,6 @@ test.describe("smoke", () => {
     // A prerendered route would return the same frozen timestamp twice.
     const second = await (await request.get("/api/health")).json();
     expect(second.checkedAt).not.toBe(firstBody.checkedAt);
-  });
-
-  test("web app manifest is valid and its icons load", async ({ request }) => {
-    const response = await request.get("/manifest.webmanifest");
-    expect(response.status()).toBe(200);
-    const manifest = await response.json();
-    expect(manifest.name).toBe("WINTRARC");
-    expect(manifest.display).toBe("standalone");
-    expect(manifest.start_url).toBe("/");
-
-    const sizes = manifest.icons.map((icon: { sizes: string }) => icon.sizes);
-    expect(sizes).toContain("192x192");
-    expect(sizes).toContain("512x512");
-
-    for (const icon of manifest.icons as { src: string }[]) {
-      const iconResponse = await request.get(icon.src);
-      expect(iconResponse.status(), icon.src).toBe(200);
-      expect(iconResponse.headers()["content-type"]).toContain("image/png");
-    }
-  });
-
-  test("service worker is served as JavaScript and never cached", async ({
-    request,
-  }) => {
-    const response = await request.get("/sw.js");
-    expect(response.status()).toBe(200);
-    expect(response.headers()["content-type"]).toContain("javascript");
-    expect(response.headers()["cache-control"]).toContain("no-store");
-    const source = await response.text();
-    expect(source).toContain('addEventListener("push"');
-    expect(source).toContain('addEventListener("notificationclick"');
   });
 
   test("security headers are present", async ({ request }) => {

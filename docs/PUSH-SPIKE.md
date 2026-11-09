@@ -6,8 +6,10 @@ device. Stage 9 builds the real notification system on what this proves.
 
 ## What exists
 
-- `public/sw.js`: a service worker that shows a notification on `push` and opens
-  a same-origin page on click.
+- `src/sw/sw.ts`: the app's service worker (served at `/serwist/sw.js`). Its push
+  handler shows a notification, and a click opens a same-origin page. The
+  decisions live in `src/sw/push-logic.ts`, which has unit tests. The worker is
+  registered by the app on every page, so installing the app also enables push.
 - `/dev/push-spike`: a page that inspects the device, asks for permission only
   after a button press and never after a refusal, subscribes, and sends a test.
 - `POST /api/dev/push-test`: sends one test push. It is hidden (HTTP 404) unless

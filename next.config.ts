@@ -1,3 +1,4 @@
+import { withSerwist } from "@serwist/turbopack";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -25,7 +26,7 @@ const nextConfig: NextConfig = {
       {
         // The service worker must never be served from a stale cache, or
         // users keep running old push handlers after a deploy.
-        source: "/sw.js",
+        source: "/serwist/:path*",
         headers: [
           {
             key: "Content-Type",
@@ -45,4 +46,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSerwist(nextConfig);

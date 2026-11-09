@@ -51,6 +51,21 @@ function readEnvironment(): Omit<PushEnvironment, "hasSubscription"> {
   };
 }
 
+/**
+ * The app registers its own worker on every page. If this tool is opened where
+ * that has not happened yet (such as during `next dev`, which leaves the
+ * worker off), register it here so push can still be tested.
+ */
+async function getRegistration(): Promise<ServiceWorkerRegistration> {
+  const existing = await navigator.serviceWorker.getRegistration("/");
+  if (existing) return existing;
+  return navigator.serviceWorker.register("/serwist/sw.js", {
+    scope: "/",
+    type: "module",
+    updateViaCache: "none",
+  });
+}
+
 async function takeSnapshot(): Promise<Snapshot> {
   const env = readEnvironment();
   const canInspect =
@@ -60,10 +75,7 @@ async function takeSnapshot(): Promise<Snapshot> {
 
   let subscription: Subscription | null = null;
   if (canInspect) {
-    const registration = await navigator.serviceWorker.register("/sw.js", {
-      scope: "/",
-      updateViaCache: "none",
-    });
+    const registration = await getRegistration();
     const existing = await registration.pushManager.getSubscription();
     subscription = existing ? toSubscription(existing) : null;
   }
@@ -204,11 +216,11 @@ export function PushSpike({ vapidPublicKey }: { vapidPublicKey: string }) {
   return (
     <div className="flex flex-col gap-8">
       <header className="flex flex-col gap-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-text-2">
+        <p className="font-mono text-meta uppercase tracking-widest text-text-2">
           Developer tool · Stage 0
         </p>
-        <h1 className="text-2xl font-semibold tracking-tight">Push spike</h1>
-        <p className="text-sm text-text-2">
+        <h1 className="text-title font-semibold tracking-tight">Push spike</h1>
+        <p className="text-secondary text-text-2">
           Proves that this device can subscribe and receive a real push. Turn
           this page off by removing ENABLE_PUSH_SPIKE after testing.
         </p>
@@ -216,23 +228,28 @@ export function PushSpike({ vapidPublicKey }: { vapidPublicKey: string }) {
 
       <section
         aria-labelledby="status-heading"
-        className="rounded-xl border border-border bg-card p-5"
+        className="rounded-card border border-border bg-card p-5"
       >
-        <h2 id="status-heading" className="text-sm font-medium text-text-2">
+        <h2
+          id="status-heading"
+          className="text-secondary font-medium text-text-2"
+        >
           This device
         </h2>
         {copy ? (
           <div className="mt-2 flex flex-col gap-1">
-            <p className="text-lg font-medium">{copy.title}</p>
-            <p className="text-sm text-text-2">{copy.detail}</p>
+            <p className="text-subhead font-medium">{copy.title}</p>
+            <p className="text-secondary text-text-2">{copy.detail}</p>
             {endpointHost ? (
-              <p className="mt-2 font-mono text-xs text-text-2">
+              <p className="mt-2 font-mono text-meta text-text-2">
                 Push service: {endpointHost}
               </p>
             ) : null}
           </div>
         ) : (
-          <p className="mt-2 text-sm text-text-2">Checking this device…</p>
+          <p className="mt-2 text-secondary text-text-2">
+            Checking this device…
+          </p>
         )}
 
         <div className="mt-4 flex flex-wrap gap-3">
@@ -241,7 +258,7 @@ export function PushSpike({ vapidPublicKey }: { vapidPublicKey: string }) {
               type="button"
               onClick={() => void enable()}
               disabled={busy}
-              className="min-h-11 rounded-lg bg-accent px-4 text-sm font-medium text-bg disabled:opacity-50"
+              className="min-h-11 rounded-control bg-accent px-4 text-secondary font-medium text-bg disabled:opacity-50"
             >
               Enable notifications
             </button>
@@ -251,7 +268,7 @@ export function PushSpike({ vapidPublicKey }: { vapidPublicKey: string }) {
               type="button"
               onClick={() => void disable()}
               disabled={busy}
-              className="min-h-11 rounded-lg border border-border px-4 text-sm disabled:opacity-50"
+              className="min-h-11 rounded-control border border-border px-4 text-secondary disabled:opacity-50"
             >
               Unsubscribe this device
             </button>
@@ -262,13 +279,16 @@ export function PushSpike({ vapidPublicKey }: { vapidPublicKey: string }) {
       {snapshot?.subscription ? (
         <section
           aria-labelledby="test-heading"
-          className="rounded-xl border border-border bg-card p-5"
+          className="rounded-card border border-border bg-card p-5"
         >
-          <h2 id="test-heading" className="text-sm font-medium text-text-2">
+          <h2
+            id="test-heading"
+            className="text-secondary font-medium text-text-2"
+          >
             Send a test
           </h2>
           <div className="mt-3 flex flex-col gap-2">
-            <label htmlFor="spike-token" className="text-sm">
+            <label htmlFor="spike-token" className="text-secondary">
               Spike token
             </label>
             <input
@@ -277,9 +297,9 @@ export function PushSpike({ vapidPublicKey }: { vapidPublicKey: string }) {
               autoComplete="off"
               value={token}
               onChange={(event) => setToken(event.target.value)}
-              className="min-h-11 rounded-lg border border-border bg-bg px-3 text-sm"
+              className="min-h-11 rounded-control border border-border bg-bg px-3 text-secondary"
             />
-            <p className="text-xs text-text-2">
+            <p className="text-meta text-text-2">
               The value of PUSH_SPIKE_TOKEN from your environment.
             </p>
           </div>
@@ -287,7 +307,7 @@ export function PushSpike({ vapidPublicKey }: { vapidPublicKey: string }) {
             type="button"
             onClick={() => void sendTest()}
             disabled={busy || token.length === 0}
-            className="mt-4 min-h-11 rounded-lg bg-accent px-4 text-sm font-medium text-bg disabled:opacity-50"
+            className="mt-4 min-h-11 rounded-control bg-accent px-4 text-secondary font-medium text-bg disabled:opacity-50"
           >
             Send test push
           </button>
@@ -295,13 +315,13 @@ export function PushSpike({ vapidPublicKey }: { vapidPublicKey: string }) {
       ) : null}
 
       <section aria-labelledby="log-heading">
-        <h2 id="log-heading" className="text-sm font-medium text-text-2">
+        <h2 id="log-heading" className="text-secondary font-medium text-text-2">
           Log
         </h2>
         <ul
           role="log"
           aria-live="polite"
-          className="mt-2 flex flex-col gap-1 font-mono text-xs text-text-2"
+          className="mt-2 flex flex-col gap-1 font-mono text-meta text-text-2"
         >
           {log.length === 0 ? <li>Nothing yet.</li> : null}
           {log.map((line) => (
