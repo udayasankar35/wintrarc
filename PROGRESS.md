@@ -176,8 +176,11 @@ against the production build).
   true until Stage 4. The sentence is removed.
 - The current-page marker was clipped in the sidebar.
 
-- [ ] **CI green on GitHub** for the Stage 1 branch. Filled in below once the
-      run finishes.
+- [x] **CI green on GitHub.** Run 42581816155 on commit `332633e` (branch
+      `stage-1-design-system`) passed both jobs. `verify`: install, typecheck
+      (app and worker), lint, formatting, 273 unit tests, build, production
+      audit, 167 end-to-end tests on GitHub's runner. `database`: migrations and
+      pgTAP. The run uploaded the `e2e-screenshots` artifact.
 
 ## Not yet verified
 
