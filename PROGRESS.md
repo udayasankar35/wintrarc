@@ -175,6 +175,11 @@ against the production build).
 - The offline page promised that work was "safe on this device", which is not
   true until Stage 4. The sentence is removed.
 - The current-page marker was clipped in the sidebar.
+- Found on the live site: the switched-off development pages (`/dev/design`,
+  `/dev/push-spike`) answered HTTP 200 with a loading screen before reporting
+  "not found" in the browser. A proxy now returns a real 404, with a unit test.
+  Checked on a production build with the switches off (404 for both) and with
+  only the gallery switched on (gallery 200, push test still 404).
 
 - [x] **CI green on GitHub.** Run 42581816155 on commit `332633e` (branch
       `stage-1-design-system`) passed both jobs. `verify`: install, typecheck
@@ -200,14 +205,23 @@ Stage 1, needs a real device or the deployed site:
 - [ ] **Service worker update after a deploy.** The new worker takes over at
       once; confirm an open tab keeps working after a second deploy.
 - [ ] **Lighthouse on the deployed site** (performance, PWA, accessibility).
-- [ ] **The worker route on Vercel.** It is prerendered at build and works under
-      `next start` here; confirm `/serwist/sw.js` loads on the deployment.
+- [ ] **Service worker headers on Vercel.** The worker file is served on the
+      deployment (see above). Still to confirm in the browser's developer tools
+      (Application, Service Workers): it shows as activated, and the file is
+      sent with `Cache-Control: no-store` and `Service-Worker-Allowed: /`.
 
 Stage 0, still open:
 
-- [ ] **Vercel deployment loads over HTTPS.** Owner step.
-- [ ] **Supabase project connected.** After `db push`, `/api/health` should show
-      `"database": "ok"`. Owner step.
+- [x] **Vercel deployment loads over HTTPS.** Checked on 2026-11-09 against
+      `https://wintrarc.vercel.app`: the Today page, `/api/health`,
+      `/manifest.webmanifest` (name, id, standalone, three icons, four
+      shortcuts) and `/serwist/sw.js` (push and notification-click handlers,
+      `/offline` in the precache) all load. The old `/sw.js` address is 404.
+- [x] **Supabase project connected.** `/api/health` returns
+      `{"status":"ok","database":"ok"}` on the deployment (the owner's check and
+      mine). The migration was applied by pasting it into the Supabase SQL
+      Editor instead of `db push`, so the project's migration history table is
+      empty. The migration is idempotent, so a later `db push` is harmless.
 - [ ] **Keep-alive effectiveness.** Confirm the daily ping stops Supabase from
       pausing the project: check the dashboard after 8 days and record it here.
 - [ ] **Real push delivery** on desktop Chrome or Edge, an installed Android PWA
@@ -217,12 +231,12 @@ Stage 0, still open:
 
 ## Owner actions, in order
 
-1. Review and merge the `stage-1-design-system` pull request.
-2. Create a free Supabase project. Put its URL and publishable key in
-   `.env.local`. Run `npx supabase@latest link --project-ref <ref>` then
-   `npx supabase@latest db push`.
-3. Import the repository into Vercel (Hobby), add the same variables, and
-   redeploy. Add the GitHub repository variable `APP_URL`.
+1. Done: Stage 1 merged (PR #2). Supabase project created and the health
+   function applied. Vercel deployment live at `https://wintrarc.vercel.app`.
+2. Confirm the GitHub repository variable `APP_URL` is set to that address, so
+   the daily keep-alive job knows where to call.
+3. Merge the small follow-up pull request that makes switched-off development
+   pages return a real 404.
 4. Run the push test on your devices using `docs/PUSH-SPIKE.md`, record the
    results, then remove `ENABLE_PUSH_SPIKE` and redeploy.
 5. Try the install and keyboard checks under "Not yet verified" on your own
